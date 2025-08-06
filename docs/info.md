@@ -17,6 +17,7 @@ This peripheral is a synthesizable hardware implementation of the Nintendo Enter
     - Mixer is now linear
     - Square wave was simplified
     - Triangle wave was simplified
+    - No PAL support. Only NTSC
 ## Peripheral ID
 
 The RV2A03 uses #15 as the peripheral ID.
