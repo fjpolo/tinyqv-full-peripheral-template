@@ -585,7 +585,7 @@ module APU (
     input  logic  [7:0]  DIN,            // Data to APU
     input  logic         RW,
     input  logic         CS,
-    input  logic  [4:0]  audio_channels, // Enabled audio channels
+    input  logic  [3:0]  audio_channels, // Enabled audio channels
     input  logic         odd_or_even,
     output logic  [7:0]  DOUT,           // Data from APU
     output wire   [15:0] Sample,
@@ -653,24 +653,22 @@ module APU (
     assign aclk1_delayed = ~odd_or_even & ce;
     assign phi1 = ce;
 
-    logic [4:0] Enabled;
+    logic [3:0] Enabled;
     logic [3:0] Sq1Sample,Sq2Sample,TriSample,NoiSample;
-    logic [4:0] TriSample_enhanced;
     logic DmcIrq = 1'b0;
 
     logic irq_flag;
     logic frame_irq;
 
     // Generate internal memory write signals
-    logic ApuMW0, ApuMW1, ApuMW2, ApuMW3, ApuMW4, ApuMW5;
+    logic ApuMW0, ApuMW1, ApuMW2, ApuMW3, ApuMW5;
     assign ApuMW0 = ADDR[4:2]==0; // SQ1
     assign ApuMW1 = ADDR[4:2]==1; // SQ2
     assign ApuMW2 = ADDR[4:2]==2; // TRI
     assign ApuMW3 = ADDR[4:2]==3; // NOI
-    assign ApuMW4 = ADDR[4:2]>=4; // DMC
     assign ApuMW5 = ADDR[4:2]==5; // Control registers
 
-    logic Sq1NonZero, Sq2NonZero, TriNonZero, TriNonZero_enhanced, NoiNonZero;
+    logic Sq1NonZero, Sq2NonZero, TriNonZero, NoiNonZero;
     logic ClkE, ClkL;
     
     // The internal clock enables are now derived from the frame counter.
@@ -679,11 +677,11 @@ module APU (
     assign ClkL = frame_half & aclk1_delayed;
 
     // Use a single synchronous assignment for enabled_buffer.
-    logic [4:0] enabled_buffer;
+    logic [3:0] enabled_buffer;
 
     always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
-            enabled_buffer <= 0;
+            enabled_buffer <= 0;    
         end else if (apu_ce_sync && ApuMW5 && write && ADDR[1:0] == 1) begin
             enabled_buffer <= DIN[4:0]; // Register $4015
         end
@@ -782,7 +780,6 @@ module APU (
         .square2        (Sq2Sample),
         .noise          (NoiSample),
         .triangle       (TriSample),
-        .dmc            (),
         .sample         (Sample)
     );
 
@@ -814,7 +811,6 @@ module APUMixer (
     input  logic  [3:0] square2,
     input  logic  [3:0] triangle,
     input  logic  [3:0] noise,
-    input  logic  [6:0] dmc,
     output logic [15:0] sample
 );
 
@@ -845,11 +841,6 @@ end
 
 // Square waves: A simple linear sum of the two channels.
 wire [15:0] ch1_output = {12'b0, square1} + {12'b0, square2};
-
-// // Normal mixer path (now combinatorial linear)
-// // Widen smaller channel outputs to 16 bits for addition
-// wire [15:0] tri_normal_output_scaled = {6'b0, triangle, 6'b0};
-// wire [15:0] noise_output_scaled = {5'b0, noise_lut[noise], 5'b0};
 
 // Sum all channels for the normal linear mixer output
 assign sample = ch1_output + triangle + noise_lut[noise];

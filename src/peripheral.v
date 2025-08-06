@@ -11,6 +11,7 @@
  //   - uo_out[0] to uo_out[7]: Output PMOD, only connected if this peripheral is selected.
  //     ⚠ Note that uo_out[0] is normally used for UART TX.
  //       +uo_out[1]: apu_IRQ
+ //       +uo_out[2]: apu_o_ce
 
  // Memory Mapped Registers
  //
@@ -66,7 +67,6 @@ module tqvp_fjpolo_rv2a03 (
     localparam APU_STATUS_REG_ADDRESS  = 6'h15;
     localparam APU_FRAME_COUNTER_REG_ADDRESS  = 6'h17;
 
-    reg [7:0] reg_apu [30:0];
     reg [7:0] reg_configuration0;
     reg [7:0] reg_data_input;
     reg [7:0] reg_data_output_msb;
@@ -82,13 +82,12 @@ module tqvp_fjpolo_rv2a03 (
     wire apu_us = reg_configuration0[1];
     wire apu_is_mmc5 = reg_configuration0[2];          // New bit for isMMC5
     
-    wire [4:0] apu_audio_channels = 5'b01111; 
+    wire [3:0] apu_audio_channels = 4'b1111; 
 
-    wire [7:0] apu_data_out;
     wire [15:0] apu_output_sample_16b;
-    wire apu_data_output_ready;         
     
     wire apu_IRQ;
+    wire apu_o_ce;
     
     reg odd_or_even = 1; 
 
@@ -133,12 +132,7 @@ module tqvp_fjpolo_rv2a03 (
     wire apu_wr_signal_RVdomain = (data_write_n == 2'b10) ? 1'b1 :     
                                   (data_write_n == 2'b01) ? 1'b1 :     
                                   (data_write_n == 2'b00) ? 1'b1 :     
-                                  1'b0;                    
-
-    wire apu_rw_signal_RVdomain = (data_read_n == 2'b10) ? 1'b1 :     
-                                  (data_read_n == 2'b01) ? 1'b1 :     
-                                  (data_read_n == 2'b00) ? 1'b1 :     
-                                  1'b0;                     
+                                  1'b0;                                      
 
     wire apu_rw = (apu_wr_signal_RVdomain) ? 1'b0 : 1'b1;
     
@@ -160,7 +154,8 @@ module tqvp_fjpolo_rv2a03 (
         .odd_or_even(odd_or_even),
         .DOUT(apu_dout),
         .Sample(apu_output_sample_16b),
-        .IRQ(apu_IRQ)
+        .IRQ(apu_IRQ),
+        .o_ce(apu_o_ce)
     );
 
     always @(posedge clk) begin
@@ -174,23 +169,10 @@ module tqvp_fjpolo_rv2a03 (
     end
     
     // Explicitly assigning uo_out bits as per comments
-    assign uo_out[0]   = apu_IRQ;
-    assign uo_out[7:1] = ui_in[7:1];                
-
-    integer i;
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            for (i = 0; i <= 30; i = i + 1) begin
-                reg_apu[i] <= 8'h00;
-            end
-        end else begin
-            if (data_write_n == 2'b00) begin
-                if (address >= 6'h00 && address < 6'h20) begin // APU registers 0x00-0x1F for writes
-                    reg_apu[address[4:0]] <= data_in[7:0]; // Use lower 5 bits for APU internal addressing
-                end
-            end
-        end
-    end
+    assign uo_out[0]   = ui_in[0];
+    assign uo_out[1]   = apu_IRQ;
+    assign uo_out[2]   = apu_o_ce;
+    assign uo_out[7:3] = ui_in[7:3];                
     
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -248,6 +230,6 @@ module tqvp_fjpolo_rv2a03 (
 
     assign user_interrupt = example_interrupt;
 
-    wire _unused = &{data_read_n, data_ready, user_interrupt, 1'b0};
+    wire _unused = &{data_read_n, data_ready, user_interrupt, data_in[31:8], 1'b0};
 
 endmodule
