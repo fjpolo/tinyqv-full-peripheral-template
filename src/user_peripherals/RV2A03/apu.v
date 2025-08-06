@@ -827,10 +827,11 @@ initial begin
     noise_lut[15] = 6'h28;
 end
 
-// Square waves: A simple linear sum of the two channels.
-wire [15:0] ch1_output = {12'b0, square1} + {12'b0, square2};
+// Sum
+wire [15:0] mixed_sum = {12'b0, square1} + {12'b0, square2} + {12'b0, triangle} + {10'b0, noise_lut[noise]};
 
-// Sum all channels for the normal linear mixer output
-assign sample = ch1_output + triangle + noise_lut[noise];
+// Divide the sum by a constant to scale the output down and prevent overflow.
+assign sample = mixed_sum >> 2;
+
 
 endmodule
