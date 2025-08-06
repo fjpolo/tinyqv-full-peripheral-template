@@ -51,7 +51,9 @@ To test the peripheral, you can write to the `APU`'s registers via the `0x00-0x1
 
 This peripheral uses the following external hardware connections via the `PMOD` connector:
 
-* **uo_out[0]:** `apu_IRQ` (Interrupt Request signal from the `APU`)
+* **uo_out[1]:** `apu_IRQ` (Interrupt Request signal from the `APU`)
+* **uo_out[2]:** `apu_o_ce` - Signals valid output from `APU`
+
 
 ## Thanks
 
