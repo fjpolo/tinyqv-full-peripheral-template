@@ -21,7 +21,7 @@ module LenCounterUnit (
     logic lc_on_1;
     logic clear_next;
     logic [7:0] len_counter_int;
-    logic halt, halt_next;
+    logic halt;
     logic [7:0] len_counter_next;
     always_ff @(posedge clk) begin : lenunit
         if (aclk1_d)
@@ -81,7 +81,6 @@ module EnvelopeUnit (
         logic [3:0] env_div;
         logic env_reload;
         logic env_loop;
-        logic env_reset;
 
         if (env_clk) begin
             if (~env_reload) begin
@@ -123,14 +122,12 @@ module SquareChan (
     input  logic       reset,
     input  logic       cold_reset,
     input  logic       allow_us,
-    input  logic       sq2,
     input  logic [1:0] Addr,
     input  logic [7:0] DIN,
     input  logic       write,
     input  logic [7:0] lc_load,
     input  logic       LenCtr_Clock,
     input  logic       Env_Clock,
-    input  logic       odd_or_even,
     input  logic       Enabled,
     output logic [3:0] Sample,
     output logic       IsNonZero
@@ -195,7 +192,7 @@ module SquareChan (
     end
 
     // Consolidated main logic block with sweep removed
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk or posedge reset) begin
         if (reset) begin
             Duty <= 0;
             Period <= 0;
@@ -257,7 +254,6 @@ module TriangleChan (
     logic LinCtrZero;
     logic lc;
 
-    logic LenCtrZero;
     logic subunit_write;
     logic [3:0] sample_latch;
     // initial sample_latch = 'b1010;
@@ -364,7 +360,6 @@ module NoiseChan (
     logic ShortMode;
     logic [14:0] Shift;
     logic [3:0] Period;
-    logic [11:0] NoisePeriod, TimerCtr;
     logic [3:0] Envelope;
     logic subunit_write;
     logic lc;
@@ -462,7 +457,6 @@ module FrameCtr (
     input  logic aclk2,
     input  logic reset,
     input  logic cold_reset,
-    input  logic write,
     input  logic read,
     input  logic write_ce,
     input  logic [7:0] din,
@@ -585,7 +579,6 @@ module APU (
     input  logic  [7:0]  DIN,            // Data to APU
     input  logic         RW,
     input  logic         CS,
-    input  logic  [3:0]  audio_channels, // Enabled audio channels
     input  logic         odd_or_even,
     output logic  [7:0]  DOUT,           // Data from APU
     output wire   [15:0] Sample,
@@ -683,7 +676,7 @@ module APU (
         if (reset) begin
             enabled_buffer <= 0;    
         end else if (apu_ce_sync && ApuMW5 && write && ADDR[1:0] == 1) begin
-            enabled_buffer <= DIN[4:0]; // Register $4015
+            enabled_buffer <= DIN[3:0]; // Register $4015
         end
     end
     assign Enabled = enabled_buffer;
@@ -703,14 +696,12 @@ module APU (
         .reset          (reset),
         .cold_reset     (cold_reset),
         .allow_us       (allow_us),
-        .sq2            (1'b0),
         .Addr           (ADDR[1:0]),
         .DIN            (DIN),
         .write          (ApuMW0 && write),
         .lc_load        (lc_load),
         .LenCtr_Clock   (ClkL),
         .Env_Clock      (ClkE),
-        .odd_or_even    (odd_or_even),
         .Enabled        (Enabled[0]),
         .Sample         (Sq1Sample),
         .IsNonZero      (Sq1NonZero)
@@ -725,14 +716,12 @@ module APU (
         .reset          (reset),
         .cold_reset     (cold_reset),
         .allow_us       (allow_us),
-        .sq2            (1'b1),
         .Addr           (ADDR[1:0]),
         .DIN            (DIN),
         .write          (ApuMW1 && write),
         .lc_load        (lc_load),
         .LenCtr_Clock   (ClkL),
         .Env_Clock      (ClkE),
-        .odd_or_even    (odd_or_even),
         .Enabled        (Enabled[1]),
         .Sample         (Sq2Sample),
         .IsNonZero      (Sq2NonZero)
@@ -789,7 +778,6 @@ module APU (
         .aclk2          (aclk2),
         .reset          (reset),
         .cold_reset     (cold_reset),
-        .write          (ApuMW5 & write),
         .read           (ApuMW5 & read),
         .write_ce       (ApuMW5 & write_ce),
         .addr           (ADDR[1:0]),

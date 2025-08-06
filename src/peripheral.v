@@ -82,8 +82,6 @@ module tqvp_fjpolo_rv2a03 (
     wire apu_us = reg_configuration0[1];
     wire apu_is_mmc5 = reg_configuration0[2];          // New bit for isMMC5
     
-    wire [3:0] apu_audio_channels = 4'b1111; 
-
     wire [15:0] apu_output_sample_16b;
     
     wire apu_IRQ;
@@ -150,7 +148,6 @@ module tqvp_fjpolo_rv2a03 (
         .DIN(data_in[7:0]),
         .RW(apu_rw), 
         .CS(apu_cs),
-        .audio_channels(apu_audio_channels), // Now hardcoded
         .odd_or_even(odd_or_even),
         .DOUT(apu_dout),
         .Sample(apu_output_sample_16b),
@@ -230,6 +227,6 @@ module tqvp_fjpolo_rv2a03 (
 
     assign user_interrupt = example_interrupt;
 
-    wire _unused = &{data_read_n, data_ready, user_interrupt, data_in[31:8], 1'b0};
+    wire _unused = &{data_read_n, data_ready, user_interrupt, data_in[31:8], ui_in[1], ui_in[1], 1'b0};
 
 endmodule
