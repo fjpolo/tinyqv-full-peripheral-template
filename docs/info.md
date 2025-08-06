@@ -43,7 +43,7 @@ The internal `APU` registers (e.g., for channel configuration and status) can be
 
 ## How to test
 
-To test the peripheral, you can write to the `APU`'s registers via the `0x00-0x1F` address space to configure individual channels. The `0x20` register can be used to set global parameters like `MMC5` mode. The output audio samples can be read from registers `0x24` and `0x25`, and the physical audio signals can be monitored on the `PMOD` connector.
+To test the peripheral, you can write to the `APU`'s registers via the `0x00-0x1F` address space to configure individual channels. The `0x20` register can be used to set global parameters like `MMC5` mode. The output audio samples can be read from registers `0x24` and `0x25`.
 
 `WIP`: `TinyQV` drivers
 
