@@ -2,7 +2,7 @@
 
 This peripheral is a synthesizable hardware implementation of the Nintendo Entertainment System (NES) Ricoh 2A03 `APU`. It is designed to generate sound for the `TinyQV` project. The `APU` has four primary sound channels: two square waves, one triangle wave and one noise channel. The outputs of these channels are mixed to produce a single audio sample.
 
-**Key Design Features:**
+## Key Design Features
 
 * **Audio Channels:** Includes two square wave channels, a triangle channel, and a noise channel.
 * **Sample Output:** The final mixed audio sample is available in a 16-bit format through dedicated registers.
@@ -11,6 +11,9 @@ This peripheral is a synthesizable hardware implementation of the Nintendo Enter
     - Mixer is now linear
     - Square wave was simplified
     - Triangle wave was simplified
+## Peripheral ID
+
+The RV2A03 uses #15 as the peripheral ID.
 
 ## Register map
 
