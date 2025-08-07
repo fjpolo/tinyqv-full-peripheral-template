@@ -23,7 +23,7 @@ module LenCounterUnit (
     logic [7:0] len_counter_int;
     logic halt;
     logic [7:0] len_counter_next;
-    always_ff @(posedge clk or posedge reset) begin : lenunit
+    always_ff @(posedge clk) begin : lenunit
         if (aclk1_d)
             if (~enabled)
                 lc_on <= 0;
