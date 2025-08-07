@@ -43,7 +43,6 @@ module tqvp_fjpolo_onebitdac_full (
 
     // Wires for the onebitdac instance
     wire w_o_pwm;
-    wire [1:0] w_o_aux;
     wire w_o_ready;
 
     // Instantiate the onebitdac module
@@ -60,7 +59,6 @@ module tqvp_fjpolo_onebitdac_full (
         .i_reload_valid    (r_reload_valid),
         .i_reload_data     (r_i_reload_data),
         .o_pwm             (w_o_pwm),
-        .o_aux             (w_o_aux),
         .o_ready           (w_o_ready)
     );
 
