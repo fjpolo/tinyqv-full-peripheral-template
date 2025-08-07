@@ -23,7 +23,7 @@ module LenCounterUnit (
     logic [7:0] len_counter_int;
     logic halt;
     logic [7:0] len_counter_next;
-    always_ff @(posedge clk) begin : lenunit
+    always_ff @(posedge clk or posedge reset) begin : lenunit
         if (aclk1_d)
             if (~enabled)
                 lc_on <= 0;
@@ -828,10 +828,10 @@ initial begin
 end
 
 // Sum
-wire [15:0] mixed_sum = {12'b0, square1} + {12'b0, square2} + {12'b0, triangle} + {10'b0, noise_lut[noise]};
+wire [19:0] mixed_sum = {16'b0, square1} + {16'b0, square2} + {14'b0, triangle, 2'b0} + {14'b0, noise_lut[noise]};
 
 // Divide the sum by a constant to scale the output down and prevent overflow.
-assign sample = mixed_sum >> 2;
+assign sample = mixed_sum[17:2];
 
 
 endmodule
