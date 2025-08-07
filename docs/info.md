@@ -45,7 +45,31 @@ The internal `APU` registers (e.g., for channel configuration and status) can be
 
 To test the peripheral, you can write to the `APU`'s registers via the `0x00-0x1F` address space to configure individual channels. The `0x20` register can be used to set global parameters like `MMC5` mode. The output audio samples can be read from registers `0x24` and `0x25`.
 
-`WIP`: `TinyQV` drivers
+### cocoTB
+
+#### Requirements
+
+pytest==8.3.4
+cocotb==1.9.2
+riscv-model==0.6.6
+numpy>=1.26
+
+#### State of the art
+
+I did test the module with some integration tests using cocoTB, though I must be honest, they are by no means self-checking tests. I've been lazy to improve the tests and to be honest they just spit out the waves of every channel, and that's what I used for testing.
+
+#### HowTo
+
+Locally:
+```
+cd test/; make;gtkwave tb.vcd
+```
+
+You can look into `tb.test_harness.user_peripheral.apu.Sq1Sample`, `tb.test_harness.user_peripheral.apu.Sq2Sample`, `tb.test_harness.user_peripheral.apu.TriSample`, `tb.test_harness.user_peripheral.apu.NoiSample`, `tb.test_harness.user_peripheral.apu.Sample`, `tb.test_harness.user_peripheral.reg_data_output_msb` and `tb.test_harness.user_peripheral.reg_data_output_lsb`.
+
+### WIP: `TinyQV` drivers
+
+Hopefully will add an SDK some day.
 
 ## External hardware
 
