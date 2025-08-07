@@ -68,7 +68,7 @@ module onebitdac(
                      i_data,
                      i_reload_valid, 
                      i_reload_data,
-                     o_pwm, o_aux, 
+                     o_pwm,
                      o_ready
                  );
     parameter  DEFAULT_RELOAD = 16'd486, // about 44.1 kHz sample rate @ 21.477270MHz clock, 32-bit data
@@ -82,7 +82,6 @@ module onebitdac(
     input wire                      i_reload_valid;
     input wire [(TIMING_BITS-1):0]  i_reload_data;
     output reg                      o_pwm;
-    output reg [(NAUX-1):0]         o_aux;
     output wire                     o_ready;
 
 
