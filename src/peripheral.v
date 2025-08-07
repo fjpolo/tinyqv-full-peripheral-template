@@ -96,9 +96,7 @@ module tqvp_fjpolo_onebitdac_full (
 
     // Connect the DAC outputs to the PMOD output pins
     assign uo_out[0] = w_o_pwm;
-    assign uo_out[1] = w_o_aux[0];
-    assign uo_out[2] = w_o_aux[1];
-    assign uo_out[7:3] = 5'h0;
+    assign uo_out[7:1] = 5'h0;
 
     // Read logic for memory-mapped registers
     assign data_out = (address == A_STATUS) ? {31'h0, w_o_ready} : 32'h0;
