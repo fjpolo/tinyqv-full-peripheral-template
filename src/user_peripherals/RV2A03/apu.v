@@ -828,7 +828,7 @@ initial begin
 end
 
 // Sum
-wire [19:0] mixed_sum = {16'b0, square1} + {16'b0, square2} + {14'b0, triangle, 2'b0} + {14'b0, noise_lut[noise]};
+wire [17:0] mixed_sum = {14'b0, square1} + {14'b0, square2} + {12'b0, triangle, 2'b0} + {12'b0, noise_lut[noise]};
 
 // Divide the sum by a constant to scale the output down and prevent overflow.
 assign sample = mixed_sum[17:2];
