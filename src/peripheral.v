@@ -208,25 +208,8 @@ module tqvp_fjpolo_rv2a03 (
     assign data_out = data_out_reg;
 
     assign data_ready = 1;
-    
-    reg example_interrupt;
-    reg last_ui_in_6;
+    assign user_interrupt = 'h0;
 
-    always @(posedge clk) begin
-        if (!rst_n) begin
-            example_interrupt <= 0;
-        end
-
-        if (ui_in[6] && !last_ui_in_6) begin
-            example_interrupt <= 1;
-        end else if (address == 6'h8 && data_write_n != 2'b11 && data_in[0]) begin
-            example_interrupt <= 0;
-        end
-        last_ui_in_6 <= ui_in[6];
-    end
-
-    assign user_interrupt = example_interrupt;
-
-    wire _unused = &{data_read_n, data_ready, user_interrupt, data_in[31:8], ui_in[1], ui_in[1], 1'b0};
+    wire _unused = &{data_read_n, data_ready, data_in[31:8], ui_in[1], ui_in[1], 1'b0};
 
 endmodule
