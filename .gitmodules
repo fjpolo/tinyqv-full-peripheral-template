@@ -6,3 +6,7 @@
 	path = firmware/tinyQV-projects
 	url = https://github.com/MichaelBell/tinyQV-projects
 	branch = main
+[submodule "firmware/micropython"]
+	path = firmware/micropython
+	url = https://github.com/MichaelBell/micropython
+	branch = tinyqv-sky25a
